@@ -1,0 +1,21 @@
+hostname R{{hosts.number}}
+interface loopback0
+ip address 150.1.{{hosts.number}}.{{hosts.number}} 255.255.255.255
+no shutdown
+exit
+interface GigabitEthernet1
+no sh
+{% for interface in hosts.interface %}
+    interface GigabitEthernet1.{{interface}}
+    encapsulation dot1Q {{interface}}
+    ip address 155.1.{{interface}}.{{hosts.number}} 255.255.255.0
+    no shutdown
+{% endfor %}
+router rip
+version 2
+{% for interface in hosts.interface %}
+network 155.1.{{interface}}.0
+{% endfor %}
+network 150.1.{{hosts.number}}.{{hosts.number}}
+no auto-summary
+exit
